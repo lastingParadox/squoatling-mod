@@ -1,0 +1,17 @@
+[
+	{
+		"op": "add",
+		"path": "/initialquests/squoatling",
+		"value": [
+			"protectorate"
+		]
+	},
+	{
+		"op": "add",
+		"path": "/pronounGenders/squoatling",
+		"value": {
+			"male": "neutral",
+			"female": "neutral"
+		}
+	}
+]

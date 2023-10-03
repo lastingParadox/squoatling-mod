@@ -1,0 +1,10 @@
+[{
+		"op" : "add",
+		"path" : "/species/squoatling",
+		"value" : {
+			"aiFrames" : "squoatlingAI.png",
+			"portraitFrames" : "portraits/squoatlingportrait.png",
+			"staticFrames" : "staticsquoatling.png"	
+		}
+	}
+]

@@ -1,0 +1,16 @@
+[
+	{ "op" : "add",
+		"path" : "/speciesShips/squoatling",
+		"value" : [
+		    "/ships/squoatling/squoatlingt0.structure",
+			"/ships/squoatling/squoatlingt1.structure",
+			"/ships/squoatling/squoatlingt2.structure",
+			"/ships/squoatling/squoatlingt3.structure",
+			"/ships/squoatling/squoatlingt4.structure",
+			"/ships/squoatling/squoatlingt5.structure",
+			"/ships/squoatling/squoatlingt6.structure",
+			"/ships/squoatling/squoatlingt7.structure",
+			"/ships/squoatling/squoatlingt8.structure"
+		]
+	}
+]

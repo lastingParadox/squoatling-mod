@@ -1,0 +1,531 @@
+{
+  "kind": "squoatling",
+  "charCreationTooltip": {
+    "title": "Squoatling",
+    "subTitle": "O2",
+    "description": "The Squoatlings are a passive agrarian race who are quite naiive to the complexities of interstellar civilization and travel. In their worship of their creator, Squoat, they strive to be productive, courteous, and enriched in their efforts to understand the galaxy."
+  },
+  "nameGen": [
+    "/species/squoatlingmalenamegen.config:names",
+    "/species/squoatlingfemalenamegen.config:names"
+  ],
+  "ouchNoises": [
+    "/sfx/humanoid/squoatlinghurt_male2.ogg",
+    "/sfx/humanoid/squoatlinghurt_female1.ogg"
+  ],
+  "charGenTextLabels": [
+    "Fur colour",
+    "Hair style",
+    "Shirt",
+    "Legwear",
+    "Eye colour",
+    "Markings",
+    "Shirt colour",
+    "Legwear colour",
+    "Squoatling",
+    "Personality"
+  ],
+  "skull": "/humanoid/squoatling/dead.png",
+  "effectDirectives": "?replace=FEFFFFFF=FFFFFFFF?replace=9bd4ffFF=ffea63FF?replace=31a6ffFF=f5bc00FF",
+  "defaultBlueprints": {
+    "tier1": [
+      {
+        "item": "flagsquoatling"
+      },
+      {
+        "item": "humantier1head"
+      },
+      {
+        "item": "humantier1chest"
+      },
+      {
+        "item": "humantier1pants"
+      },
+      {
+        "item": "humantier2head"
+      },
+      {
+        "item": "humantier2chest"
+      },
+      {
+        "item": "humantier2pants"
+      },
+      {
+        "item": "squoatlingsword"
+      },
+      {
+        "item": "ironshortsword"
+      },
+      {
+        "item": "ironbroadsword"
+      },
+      {
+        "item": "tungstenaxe"
+      },
+      {
+        "item": "tungstenhammer"
+      },
+      {
+        "item": "humantier3head"
+      },
+      {
+        "item": "humantier3chest"
+      },
+      {
+        "item": "humantier3pants"
+      },
+      {
+        "item": "humantier4head"
+      },
+      {
+        "item": "humantier4chest"
+      },
+      {
+        "item": "humantier4pants"
+      },
+      {
+        "item": "titaniumdagger"
+      },
+      {
+        "item": "titaniumspear"
+      },
+      {
+        "item": "durasteelbroadsword"
+      },
+      {
+        "item": "durasteelshortsword"
+      },
+      {
+        "item": "humantier5ahead"
+      },
+      {
+        "item": "humantier5achest"
+      },
+      {
+        "item": "humantier5apants"
+      },
+      {
+        "item": "humantier6ahead"
+      },
+      {
+        "item": "humantier6achest"
+      },
+      {
+        "item": "humantier6apants"
+      },
+      {
+        "item": "humantier5mhead"
+      },
+      {
+        "item": "humantier5mchest"
+      },
+      {
+        "item": "humantier5mpants"
+      },
+      {
+        "item": "humantier6mhead"
+      },
+      {
+        "item": "humantier6mchest"
+      },
+      {
+        "item": "humantier6mpants"
+      },
+      {
+        "item": "humantier5shead"
+      },
+      {
+        "item": "humantier5schest"
+      },
+      {
+        "item": "humantier5spants"
+      },
+      {
+        "item": "humantier6shead"
+      },
+      {
+        "item": "humantier6schest"
+      },
+      {
+        "item": "humantier6spants"
+      },
+      {
+        "item": "aegisaltpistol"
+      },
+      {
+        "item": "aegisaltbow"
+      },
+      {
+        "item": "feroziumwand"
+      },
+      {
+        "item": "feroziumstaff"
+      },
+      {
+        "item": "violiumshortsword"
+      },
+      {
+        "item": "violiumbroadsword"
+      },
+      {
+        "item": "humanstoragelocker"
+      },
+      {
+        "item": "squoatlingshipdoor"
+      },
+      {
+        "item": "squoatlingshiphatch"
+      },
+      {
+        "item": "squoatlingoutfit1chest"
+      },
+      {
+        "item": "squoatlingoutfit1legs"
+      },
+      {
+        "item": "squoatlingoutfit2chest"
+      },
+      {
+        "item": "squoatlingoutfit2legs"
+      },
+      {
+        "item": "squoatlingoutfit3chest"
+      },
+      {
+        "item": "squoatlingoutfit3legs"
+      },
+      {
+        "item": "squoatlingoutfit4chest"
+      },
+      {
+        "item": "squoatlingoutfit4legs"
+      }
+    ]
+  },
+  "headOptionAsFacialhair": true,
+  "altOptionAsUndyColor": true,
+  "genders": [
+    {
+      "name": "male",
+      "image": "/interface/title/squoatlingmaleico.png",
+      "characterImage": "/interface/title/squoatlingmale.png",
+      "hair": [
+        "bald",
+        "base",
+        "male1"
+      ],
+      "shirt": [
+        "squoatlingoutfit1chest",
+        "squoatlingoutfit2chest",
+        "squoatlingoutfit3chest",
+        "squoatlingoutfit4chest"
+      ],
+      "pants": [
+        "squoatlingoutfit1legs",
+        "squoatlingoutfit2legs",
+        "squoatlingoutfit3legs",
+        "squoatlingoutfit4legs"
+      ],
+      "facialHairGroup": "markings",
+      "facialHair": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "facialMaskGroup": "",
+      "facialMask": []
+    },
+    {
+      "name": "female",
+      "image": "/interface/title/squoatlingfemico.png",
+      "characterImage": "/interface/title/squoatlingfemale.png",
+      "hair": [
+        "bald",
+        "base"
+      ],
+      "shirt": [
+        "squoatlingoutfit1chest",
+        "squoatlingoutfit2chest",
+        "squoatlingoutfit3chest",
+        "squoatlingoutfit4chest"
+      ],
+      "pants": [
+        "squoatlingoutfit1legs",
+        "squoatlingoutfit2legs",
+        "squoatlingoutfit3legs",
+        "squoatlingoutfit4legs"
+      ],
+      "facialHairGroup": "markings",
+      "facialHair": [
+        "1"
+      ],
+      "facialMaskGroup": "",
+      "facialMask": []
+    }
+  ],
+  "bodyColor": [
+    {
+      "CDBC89": "CDBC89",
+      "D9CFAC": "D9CFAC",
+      "897A4B": "897A4B",
+      "72643E": "72643E",
+      "AF7E55": "AF7E55",
+      "7F5B3E": "7F5B3E",
+      "5E432E": "5E432E",
+      "DED19F": "DED19F",
+      "968F72": "968F72",
+      "F2E6C1": "F2E6C1"
+    },
+    {
+      "CDBC89": "85E290",
+      "D9CFAC": "B3EFBA",
+      "897A4B": "4F9E5C",
+      "72643E": "448957",
+      "AF7E55": "517F56",
+      "7F5B3E": "30734F",
+      "5E432E": "255E42",
+      "DED19F": "D2F7D6",
+      "968F72": "75998F",
+      "F2E6C1": "D4F4D8"
+    },
+    {
+      "CDBC89": "C2E0AA",
+      "D9CFAC": "CEF3CD",
+      "897A4B": "7E9E6C",
+      "72643E": "67885F",
+      "AF7E55": "699941",
+      "7F5B3E": "39762A",
+      "5E432E": "285B1F",
+      "DED19F": "9ABC87",
+      "968F72": "527A5A",
+      "F2E6C1": "E7FFE2"
+    },
+    {
+      "CDBC89": "C0C0C0",
+      "D9CFAC": "DADADA",
+      "897A4B": "777777",
+      "72643E": "636363",
+      "AF7E55": "595959",
+      "7F5B3E": "3F3F3F",
+      "5E432E": "262626",
+      "DED19F": "D6D6D6",
+      "968F72": "949494",
+      "F2E6C1": "F4F4F4"
+    },
+    {
+      "CDBC89": "3F3939",
+      "D9CFAC": "4C3C3C",
+      "897A4B": "262424",
+      "72643E": "191919",
+      "AF7E55": "333333",
+      "7F5B3E": "191919",
+      "5E432E": "000000",
+      "DED19F": "7F7272",
+      "968F72": "493333",
+      "F2E6C1": "664C4C"
+    },
+    {
+      "CDBC89": "E2A156",
+      "D9CFAC": "EEB479",
+      "897A4B": "9E5F18",
+      "72643E": "87490B",
+      "AF7E55": "C46322",
+      "7F5B3E": "94400B",
+      "5E432E": "732800",
+      "DED19F": "F3B66C",
+      "968F72": "AB743F",
+      "F2E6C1": "FFCB8E"
+    },
+    {
+      "CDBC89": "FFE97F",
+      "D9CFAC": "FFFCA2",
+      "897A4B": "BBA741",
+      "72643E": "A49134",
+      "AF7E55": "D8C97F",
+      "7F5B3E": "998B47",
+      "5E432E": "685F31",
+      "DED19F": "FFFE95",
+      "968F72": "C8BC68",
+      "F2E6C1": "FFFFB7"
+    },
+    {
+      "CDBC89": "E0B8D5",
+      "D9CFAC": "ECD5E7",
+      "897A4B": "B97EB9",
+      "72643E": "915F91",
+      "AF7E55": "B766AE",
+      "7F5B3E": "874B80",
+      "5E432E": "72396C",
+      "DED19F": "DE9CB8",
+      "968F72": "75576B",
+      "F2E6C1": "F7E8F4"
+    },
+    {
+      "CDBC89": "F0AC8D",
+      "D9CFAC": "FCBFB0",
+      "897A4B": "AC6A4F",
+      "72643E": "955442",
+      "AF7E55": "D26E59",
+      "7F5B3E": "A24B42",
+      "5E432E": "7F403A",
+      "DED19F": "FDC1A3",
+      "968F72": "B97F76",
+      "F2E6C1": "FFD3C9"
+    },
+    {
+      "CDBC89": "DEC5F9",
+      "D9CFAC": "EAD8FF",
+      "897A4B": "9A83BB",
+      "72643E": "836DAE",
+      "AF7E55": "896A98",
+      "7F5B3E": "634F85",
+      "5E432E": "4E3E68",
+      "DED19F": "EFDAFF",
+      "968F72": "A798E2",
+      "F2E6C1": "F3EAFF"
+    },
+    {
+      "CDBC89": "BAE2E2",
+      "D9CFAC": "D9F9F9",
+      "897A4B": "76A0A4",
+      "72643E": "5F8A97",
+      "AF7E55": "9CA4AE",
+      "7F5B3E": "6C8197",
+      "5E432E": "526577",
+      "DED19F": "E6EFEF",
+      "968F72": "9BC1C1",
+      "F2E6C1": "EFFFFF"
+    },
+    {
+      "CDBC89": "D1CD6E",
+      "D9CFAC": "DDE091",
+      "897A4B": "8D8B30",
+      "72643E": "767527",
+      "AF7E55": "66633C",
+      "7F5B3E": "4A4837",
+      "5E432E": "2D2D27",
+      "DED19F": "E2E284",
+      "968F72": "9AA057",
+      "F2E6C1": "F6F7A6"
+    },
+    {
+      "CDBC89": "E6ECF2",
+      "D9CFAC": "F2FFFF",
+      "897A4B": "A2AAB4",
+      "72643E": "8B94A7",
+      "AF7E55": "D9BDCE",
+      "7F5B3E": "988BA7",
+      "5E432E": "777087",
+      "DED19F": "F7FFFF",
+      "968F72": "8E96A5",
+      "F2E6C1": "FFFFFF"
+    },
+    {
+      "CDBC89": "ECCC7D",
+      "D9CFAC": "ECDFA0",
+      "897A4B": "A88A3F",
+      "72643E": "917432",
+      "AF7E55": "B77E42",
+      "7F5B3E": "875B2B",
+      "5E432E": "684620",
+      "DED19F": "CEC482",
+      "968F72": "978255",
+      "F2E6C1": "ECEFB5"
+    },
+    {
+      "CDBC89": "9DD0D5",
+      "D9CFAC": "A9E3F2",
+      "897A4B": "518D9A",
+      "72643E": "357692",
+      "AF7E55": "607D91",
+      "7F5B3E": "355B78",
+      "5E432E": "254863",
+      "DED19F": "AEE5EB",
+      "968F72": "66A3BE",
+      "F2E6C1": "C2FAF2"
+    }
+  ],
+  "undyColor": [
+    {
+      "FACF20": "FACF20",
+      "CFA100": "CFA100",
+      "AB7D00": "AB7D00"
+    },
+    {
+      "FACF20": "A7E000",
+      "CFA100": "80B800",
+      "AB7D00": "5D9500"
+    },
+    {
+      "FACF20": "FFFFFF",
+      "CFA100": "E0E8DF",
+      "AB7D00": "BCC4DF"
+    },
+    {
+      "FACF20": "69B548",
+      "CFA100": "267F00",
+      "AB7D00": "195400"
+    },
+    {
+      "FACF20": "BF824C",
+      "CFA100": "7F532C",
+      "AB7D00": "663F1E"
+    },
+    {
+      "FACF20": "FF9651",
+      "CFA100": "FF6A00",
+      "AB7D00": "A84300"
+    },
+    {
+      "FACF20": "7F7E72",
+      "CFA100": "515049",
+      "AB7D00": "2D2D2D"
+    },
+    {
+      "FACF20": "676EE4",
+      "CFA100": "6334B7",
+      "AB7D00": "451996"
+    },
+    {
+      "FACF20": "FDBFFF",
+      "CFA100": "B58BC8",
+      "AB7D00": "876D9C"
+    },
+    {
+      "FACF20": "EA9875",
+      "CFA100": "B5755A",
+      "AB7D00": "915E48"
+    },
+    {
+      "FACF20": "22C6C6",
+      "CFA100": "1A9A9A",
+      "AB7D00": "2E6E6E"
+    },
+    {
+      "FACF20": "8051CB",
+      "CFA100": "6734B5",
+      "AB7D00": "521EA0"
+    },
+    {
+      "FACF20": "F8B6D4",
+      "CFA100": "F891BB",
+      "AB7D00": "F878AB"
+    },
+    {
+      "FACF20": "967C39",
+      "CFA100": "6B5828",
+      "AB7D00": "493C1C"
+    },
+    {
+      "FACF20": "E56C1B",
+      "CFA100": "A1560E",
+      "AB7D00": "8E4500"
+    }
+  ],
+  "hairColor": [
+    ""
+  ]
+}
