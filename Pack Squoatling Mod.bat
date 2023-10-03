@@ -1,0 +1,1 @@
+python .\squoatling_scripts\grab_colors.py && ..\..\win32\asset_packer.exe . ..\squoatling.pak
