@@ -26,8 +26,19 @@ import squoatling_clothing as sc
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 MOD_DIR = SCRIPT_DIR.parent
-HUMANOID_DIR = MOD_DIR / "humanoid" / "squoatling"
-SPECIES_FILE = MOD_DIR / "species" / "squoatling.species"
+
+def _species_arg():
+    """`--species llamanian` (or SPECIES=llamanian) edits that species instead of the Squoatling."""
+    import sys
+    a = sys.argv
+    if "--species" in a and a.index("--species") + 1 < len(a):
+        return a[a.index("--species") + 1].lower()
+    return os.environ.get("SPECIES", "squoatling").lower()
+
+
+SPECIES = _species_arg()
+HUMANOID_DIR = MOD_DIR / "humanoid" / SPECIES
+SPECIES_FILE = MOD_DIR / "species" / f"{SPECIES}.species"
 
 # --------------------------------------------------------------------------- palette keys
 # Base sprite colors (the keys of bodyColor / undyColor in the species file) and their names.
@@ -50,6 +61,23 @@ EYE_KEYS = [
     ("CFA100", "Eye"),
     ("AB7D00", "Dark Eye"),
 ]
+
+def _rekey_for_species():
+    """Other species repaint the sprites in their own base colors: translate the key lists using the
+    role -> color table in squoatling_scripts/llamanian/<species>_palette.json (name kept, key swapped)."""
+    global BODY_KEYS, EYE_KEYS
+    if SPECIES == "squoatling":
+        return
+    table = SCRIPT_DIR / SPECIES / f"{SPECIES}_palette.json"
+    if not table.exists():
+        raise SystemExit(f"No palette table {table} for species '{SPECIES}'")
+    data = json.loads(table.read_text(encoding="utf-8"))
+    BODY_KEYS = [(data["body"][k]["to"].upper(), n) for k, n in BODY_KEYS]
+    EYE_KEYS = [(data["eye"][k]["to"].upper(), n) for k, n in EYE_KEYS]
+
+
+_rekey_for_species()
+
 
 # --------------------------------------------------------------------------- vanilla frame data
 # From assets/humanoid/{male,female}body.frames, frontarm.frames, emote.frames, humanoid.config
@@ -1590,7 +1618,7 @@ class Editor(tk.Tk):
         big = img.crop(bbox)
         state = self.state_var.get()
         frame = "" if STATES[state][1] == 1 else f"{self.anim_frame + 1}"
-        name = f"squoatling_{self.gender.get()}_{state.lower()}{frame}.png"
+        name = f"{SPECIES}_{self.gender.get()}_{state.lower()}{frame}.png"
         initial_dir = getattr(self, "_export_dir", None)
         if not initial_dir:
             pics = Path.home() / "Pictures"

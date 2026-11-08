@@ -1,0 +1,28 @@
+{
+  "_readme": "Role -> Llamanian base color. Keys are the Squoatling sprite colors; targets are the colors the Llamanian sheets are painted in (== bodyColor[0] of llamanian.species). Targets MUST be unique (make_llamanian.py asserts this). 'votes' = what the pixel diff of squoatling.png vs Llamanian_sprite.png suggested (null = role absent from the 14x35 portrait, so the pick is a guess). Edit targets here, then re-run make_llamanian.py.",
+  "body": {
+    "CDBC89": {"name": "Primary Fur",          "to": "E0975C", "votes": {"E0975C": 42, "A85636": 41, "FFCF8F": 30}, "note": "three-way split in the reference; E0975C is the middle fur tone"},
+    "D9CFAC": {"name": "Secondary Fur",        "to": "FFCF8F", "votes": {"FFCF8F": 16, "E0975C": 13}},
+    "A08E58": {"name": "Tertiary Fur",         "to": "C4733F", "votes": null, "note": "not in the portrait (hair-only color); picked a tone between E0975C and A85636"},
+    "897A4B": {"name": "Lighter Outline",      "to": "A85636", "votes": {"A85636": 20, "6F2919": 19, "E0975C": 8}, "note": "coin flip with 6F2919"},
+    "72643E": {"name": "Darker Outline",       "to": "6F2919", "votes": {"6F2919": 22, "A85636": 5}},
+    "AF7E55": {"name": "Hoof / Snout",         "to": "4F4F4F", "votes": {"A85636": 6, "E0975C": 4, "373737": 4, "FFCF8F": 1}, "note": "reference hands/hooves are grey, so grey family; the vote was split four ways. Check feet - the portrait's feet look brown"},
+    "7F5B3E": {"name": "Dark Hoof Outline",    "to": "373737", "votes": {"373737": 9, "6F2919": 8}},
+    "5E432E": {"name": "Darker Hoof Outline",  "to": "232323", "votes": {"6F2919": 2}, "note": "darkest grey, must differ from 373737"},
+    "DED19F": {"name": "Horn (no Llamanian equivalent)",        "to": "F0B07A", "votes": null, "note": "Llamanians have no horns - warm filler tone so the sheet isn't broken; erase horn pixels by hand"},
+    "968F72": {"name": "Horn Outline (no Llamanian equivalent)", "to": "8A3A21", "votes": null, "note": "filler, see above"},
+    "C1B68D": {"name": "Horn Ridges (no Llamanian equivalent)",  "to": "CC8350", "votes": null, "note": "filler, see above"}
+  },
+  "eye": {
+    "FACF20": {"name": "Light Eye", "to": "9BACB9", "votes": {"FFCF8F": 1}, "note": "from the reference eye colors 9BACB9/6B7D8B"},
+    "CFA100": {"name": "Eye",       "to": "6B7D8B"},
+    "AB7D00": {"name": "Dark Eye",  "to": "4B5A67", "note": "invented (darker than 6B7D8B)"}
+  },
+  "snap": {
+    "_comment": "Near-duplicate strays found in the Squoatling body sheets (idle frame only). Snapped to the real key in the Llamanian copy. Source sheets are NOT modified.",
+    "897A4C": "897A4B",
+    "887A4C": "897A4B",
+    "CCBC89": "CDBC89"
+  },
+  "variant_note": "bodyColor[1:] are computed from Squoatling's variant rows: hue comes from the variant, saturation/value are scaled by (llamanian base / squoatling base) so Llamanian shading survives. See make_llamanian.py"
+}

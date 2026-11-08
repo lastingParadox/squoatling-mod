@@ -8,5 +8,15 @@
         {"item" : [ "squoatlingsword", 1 ]}
       ]
     }]]
+  },
+{
+    "op": "add",
+    "path": "/llamanianStarterTreasure",
+    "value": [[0, {
+      "fill" : [
+        {"pool" : "starterTreasure"},
+        {"item" : [ "squoatlingsword", 1 ]}
+      ]
+    }]]
   }
 ]

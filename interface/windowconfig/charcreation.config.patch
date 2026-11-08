@@ -1,1 +1,3 @@
-[ { "op" : "add", "path" : "/speciesOrdering/-", "value" : "squoatling" } ]
+[ { "op" : "add", "path" : "/speciesOrdering/-", "value" : "squoatling" },
+{ "op" : "add", "path" : "/speciesOrdering/-", "value" : "llamanian" }
+]
