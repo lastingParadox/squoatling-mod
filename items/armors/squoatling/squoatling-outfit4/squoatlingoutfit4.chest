@@ -5,8 +5,8 @@
   "maxStack" : 1,
   "rarity" : "Common",
   "category" : "chestwear",
-  "description" : "A light breathable top suitable for working out. No pain, no gain, right?",
-  "shortdescription" : "Sleeveless Top",
+  "description" : "A sleek, carefully knit sweater meant to withstand the cold winters of a planet far, far away.",
+  "shortdescription" : "Winter Sweater",
   "tooltipKind" : "armor",
   "maleFrames" : {
     "body" : "chestm.png",
@@ -19,29 +19,29 @@
     "frontSleeve" : "fsleeve.png"
   },
   "colorOptions" : [
-    // BLUE
-    { "ffca8a" : "96cbe7", "e0975c" : "5588d4", "a85636" : "344495", "6f2919" : "1a1c51" },
+    // DEFAULT (MINT SQUOATLING)
+    { "ffca8a" : "9abfb6", "e0975c" : "317266", "a85636" : "064940", "6f2919" : "022923", "ff8484" : "d0b149", "ff6666" : "c4a300", "c44e4e" : "967c05" },
     // BLACK
-    { "ffca8a" : "838383", "e0975c" : "555555", "a85636" : "383838", "6f2919" : "151515" },
+    { "ffca8a" : "838383", "e0975c" : "555555", "a85636" : "383838", "6f2919" : "151515", "ff8484" : "929292", "ff6666" : "7f7f7f", "c44e4e" : "626262" },
     // GREY
-    { "ffca8a" : "b5b5b5", "e0975c" : "808080", "a85636" : "555555", "6f2919" : "303030" },
+    { "ffca8a" : "b5b5b5", "e0975c" : "808080", "a85636" : "555555", "6f2919" : "303030", "ff8484" : "e9e9e9", "ff6666" : "e5e5e5", "c44e4e" : "adadad" },
     // WHITE
-    { "ffca8a" : "e6e6e6", "e0975c" : "b6b6b6", "a85636" : "7b7b7b", "6f2919" : "373737" },
+    { "ffca8a" : "e6e6e6", "e0975c" : "b6b6b6", "a85636" : "7b7b7b", "6f2919" : "373737", "ff8484" : "c1644e", "ff6666" : "b4422b", "c44e4e" : "8c3422" },
     // RED
-    { "ffca8a" : "f4988c", "e0975c" : "d93a3a", "a85636" : "932625", "6f2919" : "601119" },
+    { "ffca8a" : "f4988c", "e0975c" : "d93a3a", "a85636" : "932625", "6f2919" : "601119", "ff8484" : "e69468", "ff6666" : "e27d46", "c44e4e" : "ad6035" },
     // ORANGE
-    { "ffca8a" : "ffd495", "e0975c" : "ea9931", "a85636" : "af4e00", "6f2919" : "6e2900" },
+    { "ffca8a" : "ffd495", "e0975c" : "ea9931", "a85636" : "af4e00", "6f2919" : "6e2900", "ff8484" : "fcf997", "ff6666" : "f9f879", "c44e4e" : "bdbc5a" },
     // YELLOW
-    { "ffca8a" : "ffffa7", "e0975c" : "e2c344", "a85636" : "a46e06", "6f2919" : "642f00" },
+    { "ffca8a" : "ffffa7", "e0975c" : "e2c344", "a85636" : "a46e06", "6f2919" : "642f00", "ff8484" : "aef18d", "ff6666" : "96f06e", "c44e4e" : "71b652" },
     // GREEN
-    { "ffca8a" : "b2e89d", "e0975c" : "51bd3b", "a85636" : "247824", "6f2919" : "144216" },
+    { "ffca8a" : "b2e89d", "e0975c" : "51bd3b", "a85636" : "247824", "6f2919" : "144216", "ff8484" : "7f94d3", "ff6666" : "5e82cf", "c44e4e" : "4964a0" },
     // BLUE
-    { "ffca8a" : "96cbe7", "e0975c" : "5588d4", "a85636" : "344495", "6f2919" : "1a1c51" },
+    { "ffca8a" : "96cbe7", "e0975c" : "5588d4", "a85636" : "344495", "6f2919" : "1a1c51", "ff8484" : "9760c7", "ff6666" : "813ec2", "c44e4e" : "643197" },
     // PURPLE
-    { "ffca8a" : "d29ce7", "e0975c" : "a451c4", "a85636" : "6a2284", "6f2919" : "320c40" },
+    { "ffca8a" : "d29ce7", "e0975c" : "a451c4", "a85636" : "6a2284", "6f2919" : "320c40", "ff8484" : "db7dd2", "ff6666" : "d65dce", "c44e4e" : "a5479e" },
     // PINK
-    { "ffca8a" : "eab3db", "e0975c" : "d35eae", "a85636" : "97276d", "6f2919" : "59163f" },
+    { "ffca8a" : "eab3db", "e0975c" : "d35eae", "a85636" : "97276d", "6f2919" : "59163f", "ff8484" : "927756", "ff6666" : "7e5f35", "c44e4e" : "624929" },
     // BROWN
-    { "ffca8a" : "ccae7c", "e0975c" : "a47844", "a85636" : "754c23", "6f2919" : "472b13" }
+    { "ffca8a" : "ccae7c", "e0975c" : "a47844", "a85636" : "754c23", "6f2919" : "472b13", "ff8484" : "383838", "ff6666" : "191919", "c44e4e" : "151515" }
   ]
 }
