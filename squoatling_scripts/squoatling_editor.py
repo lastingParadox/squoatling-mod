@@ -1,11 +1,13 @@
 """
-Squoatling preview & palette editor.
+Species preview & palette editor (Squoatling, Llamanian, Verinian).
 
-Run:  python squoatling_scripts/squoatling_editor.py      (needs Pillow; tkinter ships with Python)
+Run:  python squoatling_scripts/squoatling_editor.py [--species llamanian]   (needs Pillow)
+      or "Species Editor.bat". The species can be switched from the window.
 
 - Composites body + head + hair + markings + emote + arms + clothing the same way Starbound's
   humanoid renderer does (vanilla frame grids and offsets from humanoid.config).
-- "Fur & eyes" tab edits the species palettes (bodyColor / undyColor in species/squoatling.species).
+- "Palettes" tab edits the species palettes (bodyColor / undyColor, plus hairColor for species with
+  their own hair colors) in species/<species>.species. Add a species in SPECIES_KEYS.
 - "Clothing" tab edits colorOptions of everything in items/armors (written back in place, comments
   kept) and checks the sprite sheets for missing/empty/odd frames and file-name case problems.
 - Watches every file it draws (and the configs) and redraws when they change on disk.
@@ -26,9 +28,25 @@ import squoatling_clothing as sc
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 MOD_DIR = SCRIPT_DIR.parent
+# Vanilla assets unpacked next to the game's assets folder (Starbound/unpacked); used read-only for vanilla outfits
+VANILLA_DIR = MOD_DIR.parent.parent / "unpacked"
+# Per-species clothing offsets for the preview (pixels, + = down); edited from the window
+OFFSETS_FILE = SCRIPT_DIR / "clothing_offsets.json"
+# chest = shirt down; shrink = rows removed from the middle of the shirt (hem moves back up);
+# frontSleeve / backSleeve follow each arm; legs = pants down; legsShrink = rows removed from the middle of the
+# legs so the waistband moves down while the cuffs/feet stay on the ground.
+# Verinian: shoulders + front arm sit 3px lower, back arm 2px, legs shorter - the shirt sits 3px lower minus one
+# mid-torso row (hem 2px lower), the pants' waistband 2px lower with the legs 2 rows shorter (feet unchanged),
+# so the waistband shows under the hem exactly like on the other species.
+OFFSET_FIELDS = [("chest", "Shirt"), ("shrink", "Shirt shrink"), ("frontSleeve", "Front sleeve"),
+                 ("backSleeve", "Back sleeve"), ("legs", "Pants"), ("legsShrink", "Pants shrink")]
+SHRINK_FIELDS = {"shrink", "legsShrink"}
+DEFAULT_OFFSETS = {"verinian": {"chest": 3, "shrink": 1, "frontSleeve": 3, "backSleeve": 2,
+                                "legs": 2, "legsShrink": 2}}
 
 def _species_arg():
-    """`--species llamanian` (or SPECIES=llamanian) edits that species instead of the Squoatling."""
+    """`--species llamanian` (or SPECIES=llamanian) picks the species shown first; it can be switched
+    in the window afterwards."""
     import sys
     a = sys.argv
     if "--species" in a and a.index("--species") + 1 < len(a):
@@ -36,14 +54,11 @@ def _species_arg():
     return os.environ.get("SPECIES", "squoatling").lower()
 
 
-SPECIES = _species_arg()
-HUMANOID_DIR = MOD_DIR / "humanoid" / SPECIES
-SPECIES_FILE = MOD_DIR / "species" / f"{SPECIES}.species"
-
 # --------------------------------------------------------------------------- palette keys
-# Base sprite colors (the keys of bodyColor / undyColor in the species file) and their names.
+# Base sprite colors (the keys of bodyColor / undyColor / hairColor in each species file) and their names.
+# Set for the current species by set_species(); everything else reads these module globals.
 
-BODY_KEYS = [
+SQUOATLING_BODY_KEYS = [
     ("CDBC89", "Primary Fur"),
     ("D9CFAC", "Secondary Fur"),
     ("A08E58", "Tertiary Fur"),
@@ -56,27 +71,70 @@ BODY_KEYS = [
     ("968F72", "Horn Outline"),
     ("C1B68D", "Horn Ridges"),
 ]
-EYE_KEYS = [
+SQUOATLING_EYE_KEYS = [
     ("FACF20", "Light Eye"),
     ("CFA100", "Eye"),
     ("AB7D00", "Dark Eye"),
 ]
 
-def _rekey_for_species():
-    """Other species repaint the sprites in their own base colors: translate the key lists using the
-    role -> color table in squoatling_scripts/llamanian/<species>_palette.json (name kept, key swapped)."""
-    global BODY_KEYS, EYE_KEYS
-    if SPECIES == "squoatling":
-        return
-    table = SCRIPT_DIR / SPECIES / f"{SPECIES}_palette.json"
-    if not table.exists():
-        raise SystemExit(f"No palette table {table} for species '{SPECIES}'")
+VERINIAN_BODY_KEYS = [
+    ("954535", "Main Fur"),
+    ("702E22", "Light Outline / Secondary Fur"),
+    ("381913", "Dark Outline / Tertiary Fur"),
+    ("B4A0A0", "Ear"),
+    ("87807F", "Light Claw"),
+    ("675B58", "Main Claw / Tail Stripe"),
+    ("403836", "Dark Claw / Tail Stripe Outline"),
+]
+VERINIAN_EYE_KEYS = [
+    ("B1B5D9", "Light Eye"),
+    ("6A6AA0", "Main Eye"),
+    ("5146A0", "Dark Eye"),
+]
+VERINIAN_HAIR_KEYS = [
+    ("D9C189", "Hair Light"),
+    ("A38D59", "Hair"),
+    ("735E3A", "Hair Dark"),
+]
+
+
+def _llamanian_keys():
+    """Llamanian sprites are the Squoatling ones repainted: translate the Squoatling role names through
+    squoatling_scripts/llamanian/llamanian_palette.json (name kept, key swapped)."""
+    table = SCRIPT_DIR / "llamanian" / "llamanian_palette.json"
     data = json.loads(table.read_text(encoding="utf-8"))
-    BODY_KEYS = [(data["body"][k]["to"].upper(), n) for k, n in BODY_KEYS]
-    EYE_KEYS = [(data["eye"][k]["to"].upper(), n) for k, n in EYE_KEYS]
+    return ([(data["body"][k]["to"].upper(), n) for k, n in SQUOATLING_BODY_KEYS],
+            [(data["eye"][k]["to"].upper(), n) for k, n in SQUOATLING_EYE_KEYS])
 
 
-_rekey_for_species()
+# name -> (body keys, eye keys, hair keys or None). Hair keys = the species has its own hairColor list
+# (headOptionAsHairColor); without them hair is tinted with the fur palette.
+SPECIES_KEYS = {
+    "squoatling": lambda: (SQUOATLING_BODY_KEYS, SQUOATLING_EYE_KEYS, None),
+    "llamanian": lambda: _llamanian_keys() + (None,),
+    "verinian": lambda: (VERINIAN_BODY_KEYS, VERINIAN_EYE_KEYS, VERINIAN_HAIR_KEYS),
+}
+
+SPECIES = HUMANOID_DIR = SPECIES_FILE = None
+BODY_KEYS = EYE_KEYS = HAIR_KEYS = None
+
+
+def available_species():
+    return [s for s in SPECIES_KEYS if (MOD_DIR / "species" / f"{s}.species").exists()]
+
+
+def set_species(name):
+    """Point the module-level paths and key lists at another species."""
+    global SPECIES, HUMANOID_DIR, SPECIES_FILE, BODY_KEYS, EYE_KEYS, HAIR_KEYS
+    if name not in SPECIES_KEYS:
+        raise ValueError(f"Unknown species '{name}' (known: {', '.join(SPECIES_KEYS)})")
+    BODY_KEYS, EYE_KEYS, HAIR_KEYS = SPECIES_KEYS[name]()
+    SPECIES = name
+    HUMANOID_DIR = MOD_DIR / "humanoid" / name
+    SPECIES_FILE = MOD_DIR / "species" / f"{name}.species"
+
+
+set_species(_species_arg() if _species_arg() in SPECIES_KEYS else "squoatling")
 
 
 # --------------------------------------------------------------------------- vanilla frame data
@@ -203,6 +261,23 @@ def recolor(img, mapping):
     return out
 
 
+def shrink_rows(img, n):
+    """Remove n rows from the middle of the sprite's painted area (rows below move up), so a piece keeps its
+    top and bottom edges (collar/hem, waistband/cuffs) but gets n px shorter - for species with a shorter
+    torso or legs."""
+    bbox = img.getchannel("A").getbbox()
+    if not bbox or n <= 0:
+        return img
+    top, bottom = bbox[1], bbox[3]
+    for _ in range(min(n, max(0, bottom - top - 2))):
+        y = top + int((bottom - top) * 0.55)
+        out = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        out.paste(img.crop((0, 0, img.width, y)), (0, 0))
+        out.paste(img.crop((0, y + 1, img.width, img.height)), (0, y))
+        img, bottom = out, bottom - 1
+    return img
+
+
 class ImageCache:
     """Loads sprites as RGBA and reloads them when their mtime changes."""
 
@@ -307,7 +382,7 @@ def swatch_strip(groups, size=14, gap=6):
 class Editor(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Squoatling Editor")
+        self.title(f"Species Editor - {SPECIES.title()}")
         self.minsize(1150, 760)
 
         self.cache = ImageCache()
@@ -333,6 +408,7 @@ class Editor(tk.Tk):
         self._checker_cache = None
 
         self._build_ui()
+        self._load_offsets()
         self.load_from_disk(initial=True)
         self.load_items()
 
@@ -341,6 +417,15 @@ class Editor(tk.Tk):
         self.after(150, self._anim_tick)
         self.after(150, self._emote_tick)
         self.after(500, self._poll)
+        self._lock_window_size()
+
+    def _lock_window_size(self):
+        """Give the window an explicit size once laid out. After that Tk never resizes it to fit content
+        (changing labels, long item names, status messages) - only the user can, by dragging."""
+        self.update_idletasks()
+        w = min(max(self.winfo_reqwidth(), 1150), self.winfo_screenwidth() - 40)
+        h = min(max(self.winfo_reqheight(), 760), self.winfo_screenheight() - 80)
+        self.geometry(f"{w}x{h}")
 
     # ================================================================== UI
     def _build_ui(self):
@@ -381,6 +466,7 @@ class Editor(tk.Tk):
         self.marking_var = tk.StringVar(value=NONE)
         self.emote_var = tk.StringVar(value="Idle")
         self.eye_var = tk.StringVar(value="Same as fur palette")
+        self.hair_color_var = tk.StringVar(value="Same as fur palette")
         self.bg_var = tk.StringVar(value="Dark")
         self.zoom = tk.IntVar(value=8)
         self.playing = tk.BooleanVar(value=True)
@@ -423,7 +509,7 @@ class Editor(tk.Tk):
         self.frame_scale.grid(row=0, column=1, sticky="ew")
         ttk.Button(ff, text=">", width=2, command=lambda: self.step_frame(1)).grid(row=0, column=2)
         ttk.Checkbutton(ff, text="Animate", variable=self.playing).grid(row=0, column=3, padx=6)
-        self.frame_name_label = ttk.Label(ctrl, text="", foreground="#666", wraplength=330)
+        self.frame_name_label = ttk.Label(ctrl, text="", foreground="#666", wraplength=330, width=48)
         self.frame_name_label.grid(row=r, column=4, columnspan=2, sticky="w", padx=(10, 0), pady=(6, 0))
 
         r += 1
@@ -455,17 +541,38 @@ class Editor(tk.Tk):
 
         r += 1
         self.eye_cb = combo(r, 0, "Eyes", self.eye_var, width=26, padx=(0, 0))
-        combo(r, 2, "Background", self.bg_var, BACKGROUNDS, width=10)
+        self.hair_color_cb = combo(r, 2, "Hair color", self.hair_color_var)
+        r += 1
+        combo(r, 0, "Background", self.bg_var, BACKGROUNDS, width=10, padx=(0, 0))
+        # Per-species clothing offset (preview/export only): for species whose body sits lower in the
+        # frame than the standard humanoid (e.g. Verinians), so vanilla and mod outfits line up.
         ttk.Label(ctrl, text="Zoom").grid(row=r, column=4, sticky="w", padx=(10, 0), pady=(6, 0))
         tk.Scale(ctrl, from_=2, to=14, orient="horizontal", variable=self.zoom, showvalue=True,
                  command=lambda v: self.render()).grid(row=r, column=5, sticky="ew")
 
         r += 1
+        ttk.Label(ctrl, text="Clothing offset\n(px down, this species)").grid(row=r, column=0, sticky="w",
+                                                                           pady=(6, 0))
+        of = ttk.Frame(ctrl)
+        of.grid(row=r, column=1, columnspan=5, sticky="w", pady=(6, 0))
+        self.offset_vars = {}
+        for key, label in OFFSET_FIELDS:
+            var = tk.IntVar(value=0)
+            self.offset_vars[key] = var
+            ttk.Label(of, text=label).pack(side="left")
+            lo = 0 if key in SHRINK_FIELDS else -10
+            sp = ttk.Spinbox(of, from_=lo, to=10, width=3, textvariable=var, command=self._offsets_changed)
+            sp.pack(side="left", padx=(2, 8))
+            sp.bind("<Return>", lambda e: self._offsets_changed())
+            sp.bind("<FocusOut>", lambda e: self._offsets_changed())
+
+        r += 1
         tf = ttk.Frame(ctrl)
         tf.grid(row=r, column=0, columnspan=6, sticky="w", pady=(6, 0))
         ttk.Checkbutton(tf, text="Show arms", variable=self.show_arms, command=self.render).pack(side="left")
-        ttk.Checkbutton(tf, text="Apply palette to hair & markings", variable=self.color_hair,
-                        command=self.render).pack(side="left", padx=12)
+        self.color_hair_check = ttk.Checkbutton(tf, text="Apply palette to hair & markings",
+                                                variable=self.color_hair, command=self.render)
+        self.color_hair_check.pack(side="left", padx=12)
         ttk.Checkbutton(tf, text="Face left", variable=self.face_left, command=self.render).pack(side="left")
         ttk.Button(ctrl, text="Export image…", command=self.export_image).grid(
             row=r, column=5, sticky="e", pady=(6, 0))
@@ -473,32 +580,40 @@ class Editor(tk.Tk):
         # ---------------- right: tabs + save bar
         right = ttk.Frame(root)
         right.grid(row=0, column=1, sticky="ns")
-        right.rowconfigure(0, weight=1)
+        right.rowconfigure(1, weight=1)
+        spf = ttk.Frame(right)
+        spf.grid(row=0, column=0, sticky="ew", pady=(0, 6))
+        ttk.Label(spf, text="Species", font=("TkDefaultFont", 10, "bold")).pack(side="left")
+        self.species_var = tk.StringVar(value=SPECIES)
+        self.species_cb = ttk.Combobox(spf, textvariable=self.species_var, values=available_species(),
+                                       state="readonly", width=16)
+        self.species_cb.pack(side="left", padx=(8, 0))
+        self.species_cb.bind("<<ComboboxSelected>>", lambda e: self.switch_species(self.species_var.get()))
         self.tabs = ttk.Notebook(right)
-        self.tabs.grid(row=0, column=0, sticky="nsew")
+        self.tabs.grid(row=1, column=0, sticky="nsew")
         fur_tab = ttk.Frame(self.tabs, padding=6)
         cl_tab = ttk.Frame(self.tabs, padding=6)
-        self.tabs.add(fur_tab, text="Fur & eyes")
+        self.tabs.add(fur_tab, text="Palettes")
         self.tabs.add(cl_tab, text="Clothing")
         self.tabs.bind("<<NotebookTabChanged>>", lambda e: self._tab_changed())
         self._build_fur_tab(fur_tab)
         self._build_clothing_tab(cl_tab)
 
         sf = ttk.Frame(right)
-        sf.grid(row=1, column=0, sticky="ew", pady=(8, 0))
+        sf.grid(row=2, column=0, sticky="ew", pady=(8, 0))
         sf.columnconfigure(0, weight=1)
-        self.dirty_label = ttk.Label(sf, text="", style="Dirty.TLabel", wraplength=250)
+        self.dirty_label = ttk.Label(sf, text="", style="Dirty.TLabel", wraplength=250, width=30)
         self.dirty_label.grid(row=0, column=0, sticky="w")
         ttk.Button(sf, text="Revert", command=self.revert).grid(row=0, column=1, padx=4)
         ttk.Button(sf, text="Save  (Ctrl+S)", command=self.save).grid(row=0, column=2)
 
         self.status_var = tk.StringVar()
-        ttk.Label(self, textvariable=self.status_var, relief="sunken", anchor="w", padding=(6, 2)).pack(
+        ttk.Label(self, textvariable=self.status_var, relief="sunken", anchor="w", padding=(6, 2), width=1).pack(
             fill="x", side="bottom")
 
     def _build_fur_tab(self, tab):
         tab.rowconfigure(0, weight=1)
-        lf = ttk.LabelFrame(tab, text="Palettes (fur + eyes, in-game order)", padding=6)
+        lf = ttk.LabelFrame(tab, text="Palettes (in-game order)", padding=6)
         lf.grid(row=0, column=0, sticky="nsew")
         lf.rowconfigure(0, weight=1)
         self.tree = ttk.Treeview(lf, show="tree", style="Palette.Treeview", height=9, selectmode="browse")
@@ -524,15 +639,45 @@ class Editor(tk.Tk):
 
         ed = ttk.LabelFrame(tab, text="Colors", padding=6)
         ed.grid(row=1, column=0, sticky="ew", pady=(8, 0))
-        self.editor_title = ttk.Label(ed, text="", font=("TkDefaultFont", 9, "bold"))
+        self.editor_title = ttk.Label(ed, text="", font=("TkDefaultFont", 9, "bold"), width=24)
         self.editor_title.grid(row=0, column=0, sticky="w")
-        rows_frame = ttk.Frame(ed)
-        rows_frame.grid(row=1, column=0, sticky="ew")
+        # scrollable: species with many keys (Verinian has fur + eyes + hair) would push the window taller
+        holder = ttk.Frame(ed)
+        holder.grid(row=1, column=0, sticky="ew")
+        self.rows_canvas, rows_frame = self._scroll_area(holder, height=330, width=290)
         self.fur_rows = ColorRows(self, rows_frame, self.pick_color, self.hex_entered)
-        for group, keys, title in (("body", BODY_KEYS, "Fur (bodyColor)"), ("eye", EYE_KEYS, "Eyes (undyColor)")):
+        self._build_color_rows()
+
+    def _scroll_area(self, holder, height, width):
+        """A fixed-size, vertically scrolling area inside `holder`. Returns (canvas, inner frame)."""
+        canvas = tk.Canvas(holder, height=height, width=width, highlightthickness=0, bd=0,
+                           background=self.cget("bg"))
+        sb = ttk.Scrollbar(holder, orient="vertical", command=canvas.yview)
+        canvas.configure(yscrollcommand=sb.set)
+        canvas.grid(row=0, column=0, sticky="nsew")
+        sb.grid(row=0, column=1, sticky="ns")
+        inner = ttk.Frame(canvas)
+        canvas.create_window((0, 0), window=inner, anchor="nw")
+        inner.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        canvas.bind("<Enter>", lambda e: canvas.bind_all(
+            "<MouseWheel>", lambda ev: canvas.yview_scroll(-1 * (ev.delta // 120), "units")))
+        canvas.bind("<Leave>", lambda e: canvas.unbind_all("<MouseWheel>"))
+        return canvas, inner
+
+    def _palette_groups(self):
+        """(group, keys, title) for the current species; 'hair' only when it has its own hairColor list."""
+        groups = [("body", BODY_KEYS, "Fur (bodyColor)"), ("eye", EYE_KEYS, "Eyes (undyColor)")]
+        if HAIR_KEYS:
+            groups.append(("hair", HAIR_KEYS, "Hair (hairColor)"))
+        return groups
+
+    def _build_color_rows(self):
+        self.fur_rows.clear()
+        for group, keys, title in self._palette_groups():
             self.fur_rows.header(title)
             for key, desc in keys:
                 self.fur_rows.add((group, key), key, desc)
+        self.rows_canvas.yview_moveto(0)
 
     def _build_clothing_tab(self, tab):
         tab.columnconfigure(0, weight=1)
@@ -560,7 +705,7 @@ class Editor(tk.Tk):
         ttk.Button(wb, text="Wear whole outfit", command=self.cl_wear_outfit).grid(
             row=0, column=1, sticky="ew", padx=3)
         ttk.Button(wb, text="Undress", command=self.undress).grid(row=0, column=2, sticky="ew")
-        self.cl_sync_check = ttk.Checkbutton(top, text="Keep chest & legs color options identical")
+        self.cl_sync_check = ttk.Checkbutton(top, text="Keep chest & legs color options identical", width=44)
         self.cl_sync_check.grid(row=2, column=0, columnspan=2, sticky="w", pady=(4, 0))
         self.cl_icons = {}
 
@@ -592,8 +737,10 @@ class Editor(tk.Tk):
         ne.grid(row=0, column=1, sticky="ew", padx=(6, 0))
         ne.bind("<Return>", lambda e: self.cl_rename())
         ne.bind("<FocusOut>", lambda e: self.cl_rename())
-        rows_frame = ttk.Frame(ed)
-        rows_frame.grid(row=1, column=0, columnspan=2, sticky="ew")
+        # fixed height + scroll: items have anything from 3 to 14+ color keys, and the panel must not grow
+        holder = ttk.Frame(ed)
+        holder.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(4, 0))
+        self.cl_rows_canvas, rows_frame = self._scroll_area(holder, height=170, width=290)
         self.cl_rows = ColorRows(self, rows_frame, self.cl_pick, self.cl_hex)
 
         ck = ttk.LabelFrame(tab, text="Sprite checks", padding=6)
@@ -633,17 +780,21 @@ class Editor(tk.Tk):
             return
         self.species = data
         self.species_mtime = SPECIES_FILE.stat().st_mtime_ns
-        bodies = data.get("bodyColor", [])
-        eyes = data.get("undyColor", [])
+        lists = {"body": data.get("bodyColor", []), "eye": data.get("undyColor", [])}
+        if HAIR_KEYS:
+            # hairColor entries can be "" (no recolor) in the vanilla style; treat those as identity
+            lists["hair"] = [h if isinstance(h, dict) else {} for h in data.get("hairColor", [])]
         pals = []
-        for i in range(max(len(bodies), len(eyes))):
-            body = dict(bodies[i]) if i < len(bodies) else {}
-            eye = dict(eyes[i]) if i < len(eyes) else {}
-            for k, _ in BODY_KEYS:
-                body[k] = (norm_hex(str(body.get(k, k))) or k)
-            for k, _ in EYE_KEYS:
-                eye[k] = (norm_hex(str(eye.get(k, k))) or k)
-            pals.append({"body": body, "eye": eye})
+        for i in range(max(len(v) for v in lists.values())):
+            pal = {}
+            for group, keys, _title in self._palette_groups():
+                src = lists[group]
+                d = dict(src[i]) if i < len(src) else {}
+                for k, _ in keys:
+                    d[k] = (norm_hex(str(d.get(k, d.get(k.lower(), k)))) or k)
+                # drop lowercase duplicates of the keys we normalised
+                pal[group] = {k: v for k, v in d.items() if k.upper() == k or k.upper() not in d}
+            pals.append(pal)
         self.palettes = pals
         self.saved_palettes = copy.deepcopy(pals)
         self.selected = min(self.selected, max(0, len(pals) - 1))
@@ -651,6 +802,69 @@ class Editor(tk.Tk):
         self.refresh_palette_list()
         self.refresh_part_lists()
         self._state_changed()
+
+    # ---- per-species clothing offsets (preview/export only)
+    def _all_offsets(self):
+        data = {k: dict(v) for k, v in DEFAULT_OFFSETS.items()}
+        try:
+            for k, v in json.loads(OFFSETS_FILE.read_text(encoding="utf-8")).items():
+                data.setdefault(k, {}).update(v)
+        except (OSError, ValueError):
+            pass
+        return data
+
+    def _load_offsets(self):
+        o = self._all_offsets().get(SPECIES, {})
+        for key, var in self.offset_vars.items():
+            var.set(int(o.get(key, 0)))
+
+    def _offsets_changed(self):
+        cur = self._clothing_offsets()
+        data = self._all_offsets()
+        if data.get(SPECIES, {}) != cur:
+            data[SPECIES] = cur
+            try:
+                OFFSETS_FILE.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+            except OSError as ex:
+                self.status(f"Couldn't save clothing offsets: {ex}")
+        self.render()
+
+    def _clothing_offsets(self):
+        out = {}
+        for key, var in self.offset_vars.items():
+            try:
+                out[key] = int(var.get())
+            except (tk.TclError, ValueError):
+                out[key] = 0
+        for key in SHRINK_FIELDS:
+            out[key] = max(0, out.get(key, 0))
+        return out
+
+    def switch_species(self, name):
+        """Swap the whole palette side of the editor to another species (clothing edits are kept)."""
+        if name == SPECIES:
+            return
+        if self.species_dirty():
+            ans = messagebox.askyesnocancel(
+                "Unsaved palettes", f"Save your {SPECIES} palette changes before switching to {name}?")
+            if ans is None or (ans and self._save_species() is None):
+                self.species_var.set(SPECIES)
+                return
+        try:
+            set_species(name)
+        except Exception as ex:
+            messagebox.showerror("Species", str(ex))
+            self.species_var.set(SPECIES)
+            return
+        self.selected = 0
+        self.eye_var.set("Same as fur palette")
+        self.hair_color_var.set("Same as fur palette")
+        self.hair_options, self.marking_options = {}, {}
+        self._build_color_rows()
+        self._load_offsets()
+        self.load_from_disk()
+        self.update_dirty()
+        self.render()
 
     # ================================================================== parts lists
     def _species_gender(self):
@@ -702,7 +916,7 @@ class Editor(tk.Tk):
 
     # ================================================================== species palettes
     def _pal_strip(self, pal):
-        return swatch_strip([[pal["body"][k] for k, _ in BODY_KEYS], [pal["eye"][k] for k, _ in EYE_KEYS]])
+        return swatch_strip([[pal[g][k] for k, _ in keys] for g, keys, _t in self._palette_groups()], size=11, gap=5)
 
     def refresh_palette_list(self):
         self.tree.delete(*self.tree.get_children())
@@ -716,9 +930,14 @@ class Editor(tk.Tk):
             self.selected = max(0, min(self.selected, len(self.palettes) - 1))
             self.tree.selection_set(str(self.selected))
             self.tree.see(str(self.selected))
-        self.eye_cb["values"] = ["Same as fur palette"] + [f"Palette {i}" for i in range(len(self.palettes))]
-        if self.eye_var.get() not in self.eye_cb["values"]:
-            self.eye_var.set("Same as fur palette")
+        choices = ["Same as fur palette"] + [f"Palette {i}" for i in range(len(self.palettes))]
+        for cb, var in ((self.eye_cb, self.eye_var), (self.hair_color_cb, self.hair_color_var)):
+            cb["values"] = choices
+            if var.get() not in choices:
+                var.set("Same as fur palette")
+        self.hair_color_cb.configure(state="readonly" if HAIR_KEYS else "disabled")
+        # species with their own hair colors don't tint hair with the fur palette
+        self.color_hair_check.configure(state="disabled" if HAIR_KEYS else "normal")
         self.refresh_editor()
         self.update_dirty()
 
@@ -777,7 +996,7 @@ class Editor(tk.Tk):
 
     def add_palette(self, base=False):
         if base or not self.palettes:
-            pal = {"body": {k: k for k, _ in BODY_KEYS}, "eye": {k: k for k, _ in EYE_KEYS}}
+            pal = {g: {k: k for k, _ in keys} for g, keys, _t in self._palette_groups()}
         else:
             pal = copy.deepcopy(self.palettes[self.selected])
         self.palettes.append(pal)
@@ -811,11 +1030,15 @@ class Editor(tk.Tk):
     def load_items(self, keep=None):
         keep = keep or (self.cl_item.path if self.cl_item else None)
         self.items = sc.find_items(MOD_DIR)
-        # chest/legs pairs living in the same folder get a "keep identical" toggle
+        if VANILLA_DIR.is_dir():
+            # vanilla shirts/pants (what character creation offers), read-only, from the unpacked assets
+            self.items += sc.find_items(VANILLA_DIR, kinds={"chest", "legs"}, readonly=True, source="vanilla")
+        # chest/legs pairs living in the same folder get a "keep identical" toggle (editable items only)
         self.cl_sync = {}
         by_dir = {}
         for it in self.items:
-            by_dir.setdefault(it.path.parent, []).append(it)
+            if not it.readonly:
+                by_dir.setdefault(it.path.parent, []).append(it)
         for group in by_dir.values():
             chests = [i for i in group if i.kind == "chest"]
             legs = [i for i in group if i.kind == "legs"]
@@ -831,7 +1054,7 @@ class Editor(tk.Tk):
         if self.pants_var.get() not in legs_labels:
             self.pants_var.set(NONE)
         self._fill_item_list()
-        target = next((it for it in self.items if it.path == keep), self.items[0] if self.items else None)
+        target = next((it for it in self.items if it.path == keep), None) if keep else None
         self.cl_item = None
         if target:
             self.cl_list.selection_set(self._iid(target))
@@ -849,14 +1072,14 @@ class Editor(tk.Tk):
         icon = item.data.get("inventoryIcon")
         if not isinstance(icon, str):
             return None
-        wanted = sc.resolve_ref(MOD_DIR, item.path.parent, icon)
+        wanted = sc.resolve_ref(item.mod_dir, item.path.parent, icon)
         disk, _exact = sc.exact_or_case_match(wanted)
         img = self.cache.get(disk) if disk else None
         if img is None:
             return None
         frame = icon.split(":", 1)[1].split("?")[0] if ":" in icon else None
         if frame:
-            boxes, _ = sc.find_frames(MOD_DIR, wanted)
+            boxes, _ = sc.find_frames(item.mod_dir, wanted)
             box = (boxes or sc.parse_frames(sc._ICONS)).get(frame)
             if box and box[2] <= img.width and box[3] <= img.height:
                 img = img.crop(box)
@@ -870,11 +1093,17 @@ class Editor(tk.Tk):
         self.cl_icons = {}
         folders = {}
         for it in self.items:
-            folders.setdefault(it.path.parent, []).append(it)
+            folders.setdefault((it.source, it.path.parent), []).append(it)
         order = {"head": 0, "chest": 1, "legs": 2, "back": 3}
-        for folder, its in folders.items():
+        sources = {}
+        for (source, folder), its in folders.items():
+            if source not in sources:
+                sid = f"src:{source}"
+                title = " Mod outfits" if source == "mod" else f" {source.title()} outfits (read-only)"
+                self.cl_list.insert("", "end", iid=sid, text=title, open=(source == "mod"))
+                sources[source] = sid
             fid = f"dir:{folder}"
-            self.cl_list.insert("", "end", iid=fid, text=f" {folder.name}", open=True)
+            self.cl_list.insert(sources[source], "end", iid=fid, text=f" {folder.name}", open=(source == "mod"))
             for it in sorted(its, key=lambda i: order.get(i.kind, 9)):
                 ph = self._item_icon(it)
                 iid = self._iid(it)
@@ -1038,6 +1267,7 @@ class Editor(tk.Tk):
     def _refresh_cl_editor(self):
         item = self.cl_item
         self.cl_rows.clear()
+        self.cl_rows_canvas.yview_moveto(0)
         if item is None or not item.options:
             self.cl_name_var.set("")
             return
@@ -1083,6 +1313,8 @@ class Editor(tk.Tk):
         self.render()
 
     def cl_pick(self, key):
+        if self._readonly_item():
+            return
         opt = self.cl_item.options[self.cl_selected]
         cur = norm_hex(opt["colors"].get(key, key)) or "000000"
         res = colorchooser.askcolor(color="#" + cur, title=f"{opt.get('name', '')}: {key}", parent=self)
@@ -1102,6 +1334,8 @@ class Editor(tk.Tk):
         self._cl_set(key, h)
 
     def _cl_set(self, key, hexv):
+        if self._readonly_item():
+            return
         opt = self.cl_item.options[self.cl_selected]
         old = opt["colors"].get(key, key)
         if (norm_hex(old) or "") == hexv:
@@ -1114,6 +1348,9 @@ class Editor(tk.Tk):
     def cl_rename(self):
         if self.cl_item is None or not self.cl_item.options:
             return
+        if self.cl_item.readonly:
+            self.cl_name_var.set(self.cl_item.options[self.cl_selected].get("name", ""))
+            return
         name = self.cl_name_var.get().strip().replace("\n", " ")
         opt = self.cl_item.options[self.cl_selected]
         if opt.get("name", "") != name:
@@ -1121,6 +1358,8 @@ class Editor(tk.Tk):
             self._cl_changed()
 
     def cl_add(self):
+        if self._readonly_item():
+            return
         if self.cl_item is None:
             return
         if self.cl_item.options:
@@ -1133,6 +1372,8 @@ class Editor(tk.Tk):
         self._cl_changed(structure=True)
 
     def cl_delete(self):
+        if self._readonly_item():
+            return
         if self.cl_item is None or not self.cl_item.options:
             return
         opt = self.cl_item.options[self.cl_selected]
@@ -1145,6 +1386,8 @@ class Editor(tk.Tk):
         self._cl_changed(structure=True)
 
     def cl_move(self, d):
+        if self._readonly_item():
+            return
         if self.cl_item is None:
             return
         o = self.cl_item.options
@@ -1153,6 +1396,17 @@ class Editor(tk.Tk):
             o[self.cl_selected], o[j] = o[j], o[self.cl_selected]
             self.cl_selected = j
             self._cl_changed(structure=True)
+
+    def _readonly_item(self):
+        """True (and says so) when the edited item is a read-only vanilla item."""
+        if self.cl_item is not None and self.cl_item.readonly:
+            self.bell()
+            self.status(f"{self.cl_item.path.name} is a {self.cl_item.source} item: preview and export only, "
+                        "its color options can't be edited here.")
+            if self.cl_item.options:
+                self._refresh_cl_editor()
+            return True
+        return False
 
     def _option_labels(self, item):
         return [f"{i}  {o.get('name') or ''}".rstrip() for i, o in enumerate(item.options)] if item else []
@@ -1201,7 +1455,7 @@ class Editor(tk.Tk):
         t.configure(state="normal")
         t.delete("1.0", "end")
         total = 0
-        for it in self.items:
+        for it in [i for i in self.items if not i.readonly]:  # the mod's own items
             res = [r for r in sc.check_item(it, self.cache.get, arms) if r[0] in ("error", "warn")]
             total += len(res)
             t.insert("end", f"{it.label}\n", "info")
@@ -1210,7 +1464,7 @@ class Editor(tk.Tk):
             for lvl, msg in res:
                 t.insert("end", f"  {'✖' if lvl == 'error' else '⚠'} {msg}\n", lvl)
         t.configure(state="disabled")
-        self.status(f"Checked {len(self.items)} items: {total} errors/warnings. "
+        self.status(f"Checked {len([i for i in self.items if not i.readonly])} mod items: {total} errors/warnings. "
                     "(Select an item to see its details again.)")
 
     def cl_fix_case(self):
@@ -1247,12 +1501,12 @@ class Editor(tk.Tk):
     def update_dirty(self):
         parts = []
         if self.species_dirty():
-            parts.append("fur/eye palettes")
+            parts.append(f"{SPECIES} palettes")
         n = len(self.dirty_items())
         if n:
             parts.append(f"{n} clothing item{'s' if n > 1 else ''}")
         self.dirty_label.config(text=("Unsaved: " + ", ".join(parts)) if parts else "")
-        self.title(("* " if parts else "") + "Squoatling Editor")
+        self.title(("* " if parts else "") + f"Species Editor - {SPECIES.title()}")
 
     def revert(self):
         if self.is_dirty() and not messagebox.askyesno("Revert", "Discard all unsaved changes "
@@ -1297,6 +1551,8 @@ class Editor(tk.Tk):
             return None
         data["bodyColor"] = [{k: p["body"][k] for k in p["body"]} for p in self.palettes]
         data["undyColor"] = [{k: p["eye"][k] for k in p["eye"]} for p in self.palettes]
+        if HAIR_KEYS:
+            data["hairColor"] = [{k: p["hair"][k] for k in p["hair"]} for p in self.palettes]
         newline = "\r\n" if "\r\n" in raw else "\n"
         text = json.dumps(data, indent=2)
         if raw.endswith(("\n", "\r\n")):
@@ -1388,6 +1644,8 @@ class Editor(tk.Tk):
                 changed = True
             # clothing configs changed outside the editor?
             for it in self.items:
+                if it.readonly:
+                    continue
                 try:
                     m = it.path.stat().st_mtime_ns
                 except OSError:
@@ -1455,7 +1713,7 @@ class Editor(tk.Tk):
             wanted, disk, _exact = item.image_path(self.gender.get(), role)
             if disk is None:
                 continue
-            boxes, _where = sc.find_frames(MOD_DIR, wanted)
+            boxes, _where = sc.find_frames(item.mod_dir, wanted)
             if boxes is None:  # in-game this would fail; still preview with vanilla frames by role
                 fallback = {"body": sc._CHEST, "legs": sc._PANTS, "frontSleeve": sc._ARM_GRID,
                             "backSleeve": sc._ARM_GRID, "head": sc._HEAD, "back": sc._BACK}.get(role)
@@ -1471,14 +1729,23 @@ class Editor(tk.Tk):
         pers = next(p for p in PERSONALITIES if p[0] == self.personality.get())
 
         pal = self.palettes[self.selected] if self.palettes else None
-        eye_sel = self.eye_var.get()
-        eye_pal = pal
-        if eye_sel.startswith("Palette "):
-            idx = int(eye_sel.split()[1])
-            if idx < len(self.palettes):
-                eye_pal = self.palettes[idx]
-        mapping = self._mapping(pal, eye_pal)
-        hair_mapping = mapping if self.color_hair.get() else {}
+
+        def chosen(var):
+            sel = var.get()
+            if sel.startswith("Palette "):
+                idx = int(sel.split()[1])
+                if idx < len(self.palettes):
+                    return self.palettes[idx]
+            return pal
+
+        mapping = self._mapping(pal, chosen(self.eye_var))
+        if HAIR_KEYS:
+            # own hairColor list: hair uses only that palette (markings, if any, use the body palette)
+            hp = chosen(self.hair_color_var)
+            hair_only = {hex_rgba(k): hex_rgba(v) for k, v in (hp or {}).get("hair", {}).items() if k != v}
+            hair_mapping, marking_mapping = hair_only, mapping
+        else:
+            hair_mapping = marking_mapping = mapping if self.color_hair.get() else {}
 
         # --- frame names (Humanoid::render logic)
         if state == "Idle":
@@ -1539,18 +1806,26 @@ class Editor(tk.Tk):
         arm_xy = (PAD + arm_off[0], PAD - arm_off[1])
         body_xy = (PAD, PAD)
         chest_xy = (PAD, PAD - (0 if state == "Duck" else bob))
+        # species clothing offset (preview only): shirt + sleeves move with the upper body, pants on their own
+        off = self._clothing_offsets()
+        shirt_xy = (chest_xy[0], chest_xy[1] + off["chest"])
+        front_sleeve_xy = (arm_xy[0], arm_xy[1] + off["frontSleeve"])
+        back_sleeve_xy = (arm_xy[0], arm_xy[1] + off["backSleeve"])
+        pants_xy = (body_xy[0], body_xy[1] + off["legs"])
 
         size = FRAME + 2 * PAD
         canvas = Image.new("RGBA", (size, size), (0, 0, 0, 0))
         missing = []
 
-        def draw(path, box, xy, m, label):
+        def draw(path, box, xy, m, label, transform=None):
             if path is None:
                 return
             crop = self._crop(path, box)
             if crop is None:
                 missing.append(label)
                 return
+            if transform:
+                crop = transform(crop)
             canvas.alpha_composite(recolor(crop, m), xy)
 
         shirt_map, shirt = self._item_layers(self._item_by_label(self.shirt_var.get()),
@@ -1560,10 +1835,13 @@ class Editor(tk.Tk):
         char = not self.clothing_only.get()
         show_arms = self.show_arms.get() and not climbing
 
-        def armor(layers, role, frame, xy, m):
+        def armor(layers, role, frame, xy, m, transform=None):
             if role in layers:
                 disk, boxes = layers[role]
-                draw(disk, boxes.get(frame), xy, m, f"{disk.name}:{frame}")
+                draw(disk, boxes.get(frame), xy, m, f"{disk.name}:{frame}", transform)
+
+        shrink_shirt = (lambda im: shrink_rows(im, off["shrink"])) if off["shrink"] else None
+        shrink_pants = (lambda im: shrink_rows(im, off["legsShrink"])) if off["legsShrink"] else None
 
         # Layer order matches Starbound's Humanoid::render:
         # back arm + back sleeve, head, emote, hair, body, legs armor, chest armor,
@@ -1571,7 +1849,7 @@ class Editor(tk.Tk):
         if show_arms:
             if char:
                 draw(HUMANOID_DIR / "backarm.png", ARM_FRAMES.get(arm_name), arm_xy, mapping, "backarm")
-            armor(shirt, "backSleeve", arm_name, arm_xy, shirt_map)
+            armor(shirt, "backSleeve", arm_name, back_sleeve_xy, shirt_map)
         if char:
             draw(HUMANOID_DIR / f"{gender}head.png", head_box, head_xy, mapping, f"{gender}head")
             if not climbing:
@@ -1580,14 +1858,14 @@ class Editor(tk.Tk):
                 draw(HUMANOID_DIR / "emote.png", EMOTE_FRAMES.get(ename), head_xy, mapping, "emote")
             draw(self.hair_options.get(self.hair_var.get()), head_box, head_xy, hair_mapping, "hair")
             draw(HUMANOID_DIR / f"{gender}body.png", BODY_FRAMES.get(body_name), body_xy, mapping, f"{gender}body")
-        armor(pants, "legs", body_name, body_xy, pants_map)
-        armor(shirt, "body", chest_name, chest_xy, shirt_map)
+        armor(pants, "legs", body_name, pants_xy, pants_map, shrink_pants)
+        armor(shirt, "body", chest_name, shirt_xy, shirt_map, shrink_shirt)
         if char:
-            draw(self.marking_options.get(self.marking_var.get()), head_box, head_xy, hair_mapping, "markings")
+            draw(self.marking_options.get(self.marking_var.get()), head_box, head_xy, marking_mapping, "markings")
         if show_arms:
             if char:
                 draw(HUMANOID_DIR / "frontarm.png", ARM_FRAMES.get(arm_name), arm_xy, mapping, "frontarm")
-            armor(shirt, "frontSleeve", arm_name, arm_xy, shirt_map)
+            armor(shirt, "frontSleeve", arm_name, front_sleeve_xy, shirt_map)
 
         if self.face_left.get():
             canvas = canvas.transpose(Image.FLIP_LEFT_RIGHT)

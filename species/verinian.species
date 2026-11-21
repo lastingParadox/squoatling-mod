@@ -1,0 +1,549 @@
+{
+  "kind": "verinian",
+  "charCreationTooltip": {
+    "title": "Verinian",
+    "subTitle": "O2",
+    "description": "Welcome to Skittles' Test Mod."
+  },
+  "nameGen": [
+    "/species/verinianmalenamegen.config:names",
+    "/species/verinianfemalenamegen.config:names"
+  ],
+  "ouchNoises": [
+    "/sfx/humanoid/verinianhurt_male1.ogg",
+    "/sfx/humanoid/verinianhurt_female1.ogg"
+  ],
+  "charGenTextLabels": [
+    "Fur colour",
+    "Hair style",
+    "Shirt",
+    "Legwear",
+    "Eye Color",
+    "Hair colour",
+    "Shirt colour",
+    "Legwear colour",
+    "Verinian",
+    "Personality"
+  ],
+  "skull": "/humanoid/verinian/dead.png",
+  "effectDirectives": "?replace=FEFFFFFF=FFFFFFFF?replace=9bd4ffFF=ffea63FF?replace=31a6ffFF=f5bc00FF",
+  "defaultBlueprints": {
+    "tier1": [
+      {
+        "item": "flagverinian"
+      },
+      {
+        "item": "humantier1head"
+      },
+      {
+        "item": "humantier1chest"
+      },
+      {
+        "item": "humantier1pants"
+      },
+      {
+        "item": "humantier2head"
+      },
+      {
+        "item": "humantier2chest"
+      },
+      {
+        "item": "humantier2pants"
+      },
+      {
+        "item": "veriniansword"
+      },
+      {
+        "item": "ironshortsword"
+      },
+      {
+        "item": "ironbroadsword"
+      },
+      {
+        "item": "tungstenaxe"
+      },
+      {
+        "item": "tungstenhammer"
+      },
+      {
+        "item": "humantier3head"
+      },
+      {
+        "item": "humantier3chest"
+      },
+      {
+        "item": "humantier3pants"
+      },
+      {
+        "item": "humantier4head"
+      },
+      {
+        "item": "humantier4chest"
+      },
+      {
+        "item": "humantier4pants"
+      },
+      {
+        "item": "titaniumdagger"
+      },
+      {
+        "item": "titaniumspear"
+      },
+      {
+        "item": "durasteelbroadsword"
+      },
+      {
+        "item": "durasteelshortsword"
+      },
+      {
+        "item": "humantier5ahead"
+      },
+      {
+        "item": "humantier5achest"
+      },
+      {
+        "item": "humantier5apants"
+      },
+      {
+        "item": "humantier6ahead"
+      },
+      {
+        "item": "humantier6achest"
+      },
+      {
+        "item": "humantier6apants"
+      },
+      {
+        "item": "humantier5mhead"
+      },
+      {
+        "item": "humantier5mchest"
+      },
+      {
+        "item": "humantier5mpants"
+      },
+      {
+        "item": "humantier6mhead"
+      },
+      {
+        "item": "humantier6mchest"
+      },
+      {
+        "item": "humantier6mpants"
+      },
+      {
+        "item": "humantier5shead"
+      },
+      {
+        "item": "humantier5schest"
+      },
+      {
+        "item": "humantier5spants"
+      },
+      {
+        "item": "humantier6shead"
+      },
+      {
+        "item": "humantier6schest"
+      },
+      {
+        "item": "humantier6spants"
+      },
+      {
+        "item": "aegisaltpistol"
+      },
+      {
+        "item": "aegisaltbow"
+      },
+      {
+        "item": "feroziumwand"
+      },
+      {
+        "item": "feroziumstaff"
+      },
+      {
+        "item": "violiumshortsword"
+      },
+      {
+        "item": "violiumbroadsword"
+      },
+      {
+        "item": "humanstoragelocker"
+      },
+      {
+        "item": "verinianshipdoor"
+      },
+      {
+        "item": "verinianshiphatch"
+      },
+      {
+        "item": "verinianoutfit1chest"
+      },
+      {
+        "item": "verinianoutfit1legs"
+      },
+      {
+        "item": "verinianoutfit2chest"
+      },
+      {
+        "item": "verinianoutfit2legs"
+      },
+      {
+        "item": "verinianoutfit3chest"
+      },
+      {
+        "item": "verinianoutfit3legs"
+      },
+      {
+        "item": "verinianoutfit4chest"
+      },
+      {
+        "item": "verinianoutfit4legs"
+      }
+    ]
+  },
+  "altOptionAsUndyColor": true,
+  "headOptionAsHairColor": true,
+  "altOptionAsHairColor": true,
+  "genders": [
+    {
+      "name": "male",
+      "image": "/interface/title/verinianmaleico.png",
+      "characterImage": "/interface/title/verinianmale.png",
+      "hair": [
+        ""
+      ],
+      "shirt": [
+        "verinianoutfit1chest",
+        "verinianoutfit2chest",
+        "verinianoutfit3chest",
+        "verinianoutfit4chest"
+      ],
+      "pants": [
+        "verinianoutfit1legs",
+        "verinianoutfit2legs",
+        "verinianoutfit3legs",
+        "verinianoutfit4legs"
+      ],
+      "facialHairGroup": "",
+      "facialHair": [],
+      "facialMaskGroup": "",
+      "facialMask": []
+    },
+    {
+      "name": "female",
+      "image": "/interface/title/verinianfemico.png",
+      "characterImage": "/interface/title/verinianfemale.png",
+      "hair": [
+        ""
+      ],
+      "shirt": [
+        "verinianoutfit1chest",
+        "verinianoutfit2chest",
+        "verinianoutfit3chest",
+        "verinianoutfit4chest"
+      ],
+      "pants": [
+        "verinianoutfit1legs",
+        "verinianoutfit2legs",
+        "verinianoutfit3legs",
+        "verinianoutfit4legs"
+      ],
+      "facialHairGroup": "",
+      "facialHair": [],
+      "facialMaskGroup": "",
+      "facialMask": []
+    }
+  ],
+  "bodyColor": [
+    {
+      "954535": "954535",
+      "702E22": "702E22",
+      "381913": "381913",
+      "B4A0A0": "B4A0A0",
+      "87807F": "87807F",
+      "675B58": "675B58",
+      "403836": "403836"
+    },
+    {
+      "954535": "7E3424",
+      "702E22": "602316",
+      "381913": "32140C",
+      "B4A0A0": "A99090",
+      "87807F": "8B7F7C",
+      "675B58": "665B58",
+      "403836": "413835"
+    },
+    {
+      "954535": "4E3326",
+      "702E22": "3B251A",
+      "381913": "21150F",
+      "B4A0A0": "9E8686",
+      "87807F": "8A7F7B",
+      "675B58": "655C57",
+      "403836": "413834"
+    },
+    {
+      "954535": "7A4A2E",
+      "702E22": "5B341D",
+      "381913": "2F1B10",
+      "B4A0A0": "B59C9C",
+      "87807F": "8A807B",
+      "675B58": "655C57",
+      "403836": "413834"
+    },
+    {
+      "954535": "B5622F",
+      "702E22": "89451B",
+      "381913": "472614",
+      "B4A0A0": "DCC1C2",
+      "87807F": "8A807B",
+      "675B58": "655C57",
+      "403836": "413834"
+    },
+    {
+      "954535": "7B6A60",
+      "702E22": "5A4C44",
+      "381913": "2F2825",
+      "B4A0A0": "D0B6B6",
+      "87807F": "89807A",
+      "675B58": "655C57",
+      "403836": "403833"
+    },
+    {
+      "954535": "C79F6A",
+      "702E22": "967549",
+      "381913": "52422E",
+      "B4A0A0": "F7DCDD",
+      "87807F": "878179",
+      "675B58": "635D56",
+      "403836": "3E3932"
+    },
+    {
+      "954535": "B98A3E",
+      "702E22": "8B6425",
+      "381913": "4C381C",
+      "B4A0A0": "F7DCDD",
+      "87807F": "878179",
+      "675B58": "635D56",
+      "403836": "3E3932"
+    },
+    {
+      "954535": "E2D1AE",
+      "702E22": "AA9C7F",
+      "381913": "615A4C",
+      "B4A0A0": "F7DCDD",
+      "87807F": "858179",
+      "675B58": "615D55",
+      "403836": "3D3932"
+    },
+    {
+      "954535": "ECE9E2",
+      "702E22": "B1AEA8",
+      "381913": "666563",
+      "B4A0A0": "FFD9DB",
+      "87807F": "858179",
+      "675B58": "615D55",
+      "403836": "3C3A32"
+    },
+    {
+      "954535": "BAB9B7",
+      "702E22": "8A8988",
+      "381913": "4E4E4D",
+      "B4A0A0": "F7DCDD",
+      "87807F": "858179",
+      "675B58": "615D55",
+      "403836": "3D3932"
+    },
+    {
+      "954535": "8E8A85",
+      "702E22": "686561",
+      "381913": "393736",
+      "B4A0A0": "F1D6D6",
+      "87807F": "878179",
+      "675B58": "625D56",
+      "403836": "3E3932"
+    },
+    {
+      "954535": "5F6670",
+      "702E22": "444A52",
+      "381913": "23262A",
+      "B4A0A0": "C7ADAE",
+      "87807F": "7D828A",
+      "675B58": "595E66",
+      "403836": "353A41"
+    },
+    {
+      "954535": "4A4848",
+      "702E22": "363434",
+      "381913": "1D1C1C",
+      "B4A0A0": "A68D8E",
+      "87807F": "8B7F7F",
+      "675B58": "675B5B",
+      "403836": "423737"
+    },
+    {
+      "954535": "26252A",
+      "702E22": "1D1C21",
+      "381913": "111013",
+      "B4A0A0": "9E8686",
+      "87807F": "828089",
+      "675B58": "5E5D65",
+      "403836": "3A3940"
+    }
+  ],
+  "undyColor": [
+    {
+      "B1B5D9": "B1B5D9",
+      "6A6AA0": "6A6AA0",
+      "5146A0": "5146A0"
+    },
+    {
+      "B1B5D9": "A9BCE0",
+      "6A6AA0": "4D76AD",
+      "5146A0": "395187"
+    },
+    {
+      "B1B5D9": "BC94DE",
+      "6A6AA0": "7C41B8",
+      "5146A0": "6C2F90"
+    },
+    {
+      "B1B5D9": "F69896",
+      "6A6AA0": "C63442",
+      "5146A0": "9B2724"
+    },
+    {
+      "B1B5D9": "FFE7AF",
+      "6A6AA0": "EAA245",
+      "5146A0": "B47020"
+    },
+    {
+      "B1B5D9": "FBF497",
+      "6A6AA0": "E3E13A",
+      "5146A0": "A8A614"
+    },
+    {
+      "B1B5D9": "D1FDB3",
+      "6A6AA0": "6AB841",
+      "5146A0": "45902F"
+    },
+    {
+      "B1B5D9": "979797",
+      "6A6AA0": "535353",
+      "5146A0": "363636"
+    },
+    {
+      "B1B5D9": "F1F1F1",
+      "6A6AA0": "E6E6E6",
+      "5146A0": "979797"
+    },
+    {
+      "B1B5D9": "E8E8E8",
+      "6A6AA0": "9E9E9E",
+      "5146A0": "6E6E6E"
+    },
+    {
+      "B1B5D9": "FFDDFF",
+      "6A6AA0": "F794F8",
+      "5146A0": "D355C1"
+    },
+    {
+      "B1B5D9": "B79A83",
+      "6A6AA0": "7A5230",
+      "5146A0": "553519"
+    },
+    {
+      "B1B5D9": "D2C29B",
+      "6A6AA0": "8E7A3C",
+      "5146A0": "5E5024"
+    },
+    {
+      "B1B5D9": "8A766A",
+      "6A6AA0": "4E3322",
+      "5146A0": "2E1D12"
+    },
+    {
+      "B1B5D9": "D7F5FF",
+      "6A6AA0": "8FC3E0",
+      "5146A0": "4D86AA"
+    }
+  ],
+  "hairColor": [
+    {
+      "D9C189": "D9C189",
+      "A38D59": "A38D59",
+      "735E3A": "735E3A"
+    },
+    {
+      "D9C189": "FBF3E0",
+      "A38D59": "C9C2B0",
+      "735E3A": "969184"
+    },
+    {
+      "D9C189": "DED1B0",
+      "A38D59": "A89C7E",
+      "735E3A": "766D57"
+    },
+    {
+      "D9C189": "FBBE8C",
+      "A38D59": "C18A5C",
+      "735E3A": "875E3D"
+    },
+    {
+      "D9C189": "D6784C",
+      "A38D59": "A9532A",
+      "735E3A": "77381A"
+    },
+    {
+      "D9C189": "9D543D",
+      "A38D59": "7E3A26",
+      "735E3A": "5A2819"
+    },
+    {
+      "D9C189": "8C6048",
+      "A38D59": "6E4630",
+      "735E3A": "4E3121"
+    },
+    {
+      "D9C189": "72543E",
+      "A38D59": "5A3E2A",
+      "735E3A": "412C1D"
+    },
+    {
+      "D9C189": "48372C",
+      "A38D59": "3A2A20",
+      "735E3A": "2B1F17"
+    },
+    {
+      "D9C189": "27242A",
+      "A38D59": "1F1D22",
+      "735E3A": "18161A"
+    },
+    {
+      "D9C189": "BBB8B5",
+      "A38D59": "8A8784",
+      "735E3A": "5E5C59"
+    },
+    {
+      "D9C189": "F5F3EF",
+      "A38D59": "DEDCD8",
+      "735E3A": "ABAAA7"
+    },
+    {
+      "D9C189": "EBC899",
+      "A38D59": "B39468",
+      "735E3A": "7D6646"
+    },
+    {
+      "D9C189": "6F3B30",
+      "A38D59": "5A2A20",
+      "735E3A": "421E17"
+    },
+    {
+      "D9C189": "252B3A",
+      "A38D59": "1C2230",
+      "735E3A": "151A24"
+    }
+  ]
+}

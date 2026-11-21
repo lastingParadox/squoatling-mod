@@ -391,10 +391,13 @@ KIND_BY_EXT = {".chest": "chest", ".legs": "legs", ".head": "head", ".back": "ba
 
 
 class ClothingItem:
-    def __init__(self, mod_dir, path):
+    def __init__(self, mod_dir, path, readonly=False, source="mod"):
+        # mod_dir = the asset root the item's paths resolve against (the mod, or the unpacked vanilla assets)
         self.mod_dir = Path(mod_dir)
         self.path = Path(path)
         self.kind = KIND_BY_EXT[self.path.suffix.lower()]
+        self.readonly = readonly
+        self.source = source
         self.reload()
 
     def reload(self):
@@ -409,7 +412,8 @@ class ClothingItem:
 
     @property
     def label(self):
-        return f"{self.data.get('shortdescription', self.item_name)}  [{self.kind}]  {self.path.parent.name}"
+        tag = f"  ({self.source})" if self.source != "mod" else ""
+        return f"{self.data.get('shortdescription', self.item_name)}  [{self.kind}]  {self.path.parent.name}{tag}"
 
     def is_dirty(self):
         return self.options != self.saved_options
@@ -445,6 +449,8 @@ class ClothingItem:
         return wanted, disk, exact
 
     def save(self):
+        if self.readonly:
+            raise PermissionError(f"{self.path.name} is a read-only ({self.source}) item")
         raw = self.path.read_bytes().decode("utf-8-sig")
         new = replace_color_options(raw, self.options)
         # sanity: must still parse and contain exactly our options
@@ -459,14 +465,16 @@ class ClothingItem:
         self.saved_options = json.loads(json.dumps(self.options))
 
 
-def find_items(mod_dir):
+def find_items(mod_dir, kinds=None, readonly=False, source="mod"):
+    """All armor items under <mod_dir>/items/armors. kinds limits to e.g. {'chest', 'legs'}."""
     root = Path(mod_dir) / "items" / "armors"
     items = []
     if root.is_dir():
         for p in sorted(root.rglob("*")):
-            if p.suffix.lower() in KIND_BY_EXT and p.is_file():
+            kind = KIND_BY_EXT.get(p.suffix.lower())
+            if kind and (kinds is None or kind in kinds) and p.is_file():
                 try:
-                    items.append(ClothingItem(mod_dir, p))
+                    items.append(ClothingItem(mod_dir, p, readonly=readonly, source=source))
                 except Exception as ex:  # broken JSON etc.
                     print(f"skipping {p}: {ex}")
     return items

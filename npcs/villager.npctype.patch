@@ -1,0 +1,29 @@
+[
+	/*
+	{ "op" : "replace",
+		"path" : "/levelVariance",
+		"value" : [ 0, 0 ]
+	},
+	*/
+	{ "op" : "add",
+		"path" : "/items/verinian",
+		"value" : [
+			[0, [
+				{
+				"chest" : [
+				  { "name" : "verinianoutfit1chest", "parameters" : { "colorIndex" : [1, 3, 4, 5, 6, 7, 8, 9] } },
+				  { "name" : "verinianoutfit2chest", "parameters" : { "colorIndex" : [1, 3, 4, 5, 6, 7, 8, 9] } },
+				  { "name" : "verinianoutfit3chest", "parameters" : { "colorIndex" : [1, 3, 4, 5, 6, 7, 8, 9] } },
+				  { "name" : "verinianoutfit4chest", "parameters" : { "colorIndex" : [1, 3, 4, 5, 6, 7, 8, 9] } }
+				],
+				"legs" : [
+				  { "name" : "verinianoutfit1legs", "parameters" : { "colorIndex" : [1, 3, 4, 5, 6, 7, 8, 9] } },
+				  { "name" : "verinianoutfit2legs", "parameters" : { "colorIndex" : [1, 3, 4, 5, 6, 7, 8, 9] } },
+				  { "name" : "verinianoutfit3legs", "parameters" : { "colorIndex" : [1, 3, 4, 5, 6, 7, 8, 9] } },
+				  { "name" : "verinianoutfit4legs", "parameters" : { "colorIndex" : [1, 3, 4, 5, 6, 7, 8, 9] } }
+					]
+				}
+			] ]
+		]
+	}
+]

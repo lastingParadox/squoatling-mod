@@ -26,5 +26,19 @@
 			"/ships/squoatling/squoatlingt7.structure",
 			"/ships/squoatling/squoatlingt8.structure"
 		]
+	},
+{ "op" : "add",
+		"path" : "/speciesShips/verinian",
+		"value" : [
+		    "/ships/verinian/veriniant0.structure",
+			"/ships/verinian/veriniant1.structure",
+			"/ships/verinian/veriniant2.structure",
+			"/ships/verinian/veriniant3.structure",
+			"/ships/verinian/veriniant4.structure",
+			"/ships/verinian/veriniant5.structure",
+			"/ships/verinian/veriniant6.structure",
+			"/ships/verinian/veriniant7.structure",
+			"/ships/verinian/veriniant8.structure"
+		]
 	}
 ]

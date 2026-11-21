@@ -1,0 +1,10 @@
+{
+  "verinian": {
+    "chest": 3,
+    "shrink": 1,
+    "frontSleeve": 3,
+    "backSleeve": 2,
+    "legs": 2,
+    "legsShrink": 2
+  }
+}

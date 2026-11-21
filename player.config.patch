@@ -1,4 +1,5 @@
 [
 { "op" : "add", "path" : "/defaultCodexes/squoatling", "value" : [ "protectorate1", "protectorate2", "squoatlingdiary" ] },
-{ "op" : "add", "path" : "/defaultCodexes/llamanian", "value" : [ "protectorate1", "protectorate2" ] }
+{ "op" : "add", "path" : "/defaultCodexes/llamanian", "value" : [ "protectorate1", "protectorate2" ] },
+{ "op" : "add", "path" : "/defaultCodexes/verinian", "value" : [ "protectorate1", "protectorate2", "veriniandiary" ] }
 ]
