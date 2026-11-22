@@ -19,7 +19,6 @@
     "Shirt",
     "Legwear",
     "Eye colour",
-    "Markings",
     "Shirt colour",
     "Legwear colour",
     "Llamanian",
@@ -229,16 +228,8 @@
         "squoatlingoutfit3legs",
         "squoatlingoutfit4legs"
       ],
-      "facialHairGroup": "markings",
-      "facialHair": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7"
-      ],
+      "facialHairGroup": "",
+      "facialHair": [],
       "facialMaskGroup": "",
       "facialMask": []
     },
@@ -326,16 +317,8 @@
         "squoatlingoutfit3legs",
         "squoatlingoutfit4legs"
       ],
-      "facialHairGroup": "markings",
-      "facialHair": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7"
-      ],
+      "facialHairGroup": "",
+      "facialHair": [],
       "facialMaskGroup": "",
       "facialMask": []
     }
