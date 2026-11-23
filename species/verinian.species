@@ -3,7 +3,7 @@
   "charCreationTooltip": {
     "title": "Verinian",
     "subTitle": "O2",
-    "description": "Welcome to Skittles' Test Mod."
+    "description": "Verinians are a short-lived, short-statured, short-tempered people native to tundras, forests, and glaciers."
   },
   "nameGen": [
     "/species/verinianmalenamegen.config:names",
@@ -15,11 +15,11 @@
   ],
   "charGenTextLabels": [
     "Fur colour",
-    "Hair style",
+    "Facial hair",
     "Shirt",
     "Legwear",
     "Eye Color",
-    "Hair colour",
+    "Facial hair colour",
     "Shirt colour",
     "Legwear colour",
     "Verinian",
@@ -205,13 +205,37 @@
   "altOptionAsUndyColor": true,
   "headOptionAsHairColor": true,
   "altOptionAsHairColor": true,
+  "ffLayers": [
+    {
+      "id": "markings",
+      "label": "Markings",
+      "color": "body",
+      "options": ["", "dark", "striped"]
+    }
+  ],
+  "ffClothingFit": {
+    "headwear": { "offset": [0, -3] },
+    "chest": { "offset": [0, -2], "rows": { "at": 25, "add": -1 } },
+    "frontSleeve": { "offset": [0, -3] },
+    "backSleeve": { "offset": [0, -2] },
+    "legs": { "rows": { "at": 35, "add": -2 } }
+  },
   "genders": [
     {
       "name": "male",
       "image": "/interface/title/verinianmaleico.png",
       "characterImage": "/interface/title/verinianmale.png",
+      "hairGroup": "facialhair",
       "hair": [
-        ""
+        "",
+        "male1",
+        "male2",
+        "male3",
+        "male4",
+        "male5",
+        "male9",
+        "male10",
+        "male11"
       ],
       "shirt": [
         "verinianoutfit1chest",
@@ -471,79 +495,24 @@
   ],
   "hairColor": [
     {
-      "D9C189": "D9C189",
-      "A38D59": "A38D59",
-      "735E3A": "735E3A"
+      "B4A0A0": "B4A0A0",
+      "675B58": "675B58",
+      "403836": "403836"
     },
     {
-      "D9C189": "FBF3E0",
-      "A38D59": "C9C2B0",
-      "735E3A": "969184"
+      "B4A0A0": "8C6448",
+      "675B58": "5E3E2A",
+      "403836": "3A2418"
     },
     {
-      "D9C189": "DED1B0",
-      "A38D59": "A89C7E",
-      "735E3A": "766D57"
+      "B4A0A0": "4A454D",
+      "675B58": "2B282E",
+      "403836": "161418"
     },
     {
-      "D9C189": "FBBE8C",
-      "A38D59": "C18A5C",
-      "735E3A": "875E3D"
-    },
-    {
-      "D9C189": "D6784C",
-      "A38D59": "A9532A",
-      "735E3A": "77381A"
-    },
-    {
-      "D9C189": "9D543D",
-      "A38D59": "7E3A26",
-      "735E3A": "5A2819"
-    },
-    {
-      "D9C189": "8C6048",
-      "A38D59": "6E4630",
-      "735E3A": "4E3121"
-    },
-    {
-      "D9C189": "72543E",
-      "A38D59": "5A3E2A",
-      "735E3A": "412C1D"
-    },
-    {
-      "D9C189": "48372C",
-      "A38D59": "3A2A20",
-      "735E3A": "2B1F17"
-    },
-    {
-      "D9C189": "27242A",
-      "A38D59": "1F1D22",
-      "735E3A": "18161A"
-    },
-    {
-      "D9C189": "BBB8B5",
-      "A38D59": "8A8784",
-      "735E3A": "5E5C59"
-    },
-    {
-      "D9C189": "F5F3EF",
-      "A38D59": "DEDCD8",
-      "735E3A": "ABAAA7"
-    },
-    {
-      "D9C189": "EBC899",
-      "A38D59": "B39468",
-      "735E3A": "7D6646"
-    },
-    {
-      "D9C189": "6F3B30",
-      "A38D59": "5A2A20",
-      "735E3A": "421E17"
-    },
-    {
-      "D9C189": "252B3A",
-      "A38D59": "1C2230",
-      "735E3A": "151A24"
+      "B4A0A0": "C8A27A",
+      "675B58": "9A7552",
+      "403836": "6A4E34"
     }
   ]
 }
